@@ -2,6 +2,7 @@ package riasec.backend.model.classes;
 
 import jakarta.persistence.*;
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"title", "hollandCode"}))
 public class Profession {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

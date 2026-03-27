@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import Result from './Result';
+import { LocaleProvider } from '../context/LocaleContext';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from '../hooks/useTranslation';
 
-export default function Quiz(props: IQuizProps) {
+function QuizContent(props: IQuizProps) {
+  const { t } = useTranslation();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Array<IQuestionAnswers>>([]);
   const currentQuestion = props.questions
@@ -32,19 +36,28 @@ export default function Quiz(props: IQuizProps) {
       setShowResult(true);
     }
   };
+
   return (
     <>
       {!showResult && (
         <div className="max-w-2xl mx-auto ">
-          <h1 className="text-center font-bold text-[#f8f8f8] text-5xl pt-6 mb-24">
-            Holland Code Test
-          </h1>
+          <div className="flex items-center justify-between pt-6 mb-24">
+            <h1 className="text-center font-bold text-[#FEFAE0] text-5xl flex-1">
+              {t('quiz_title')}
+            </h1>
+            <LanguageSwitcher />
+          </div>
           <div className="flex flex-col border-solid border-2 rounded-md items-center">
-            <h4 className="mt-10 text-xl text-white/70">
-              Question {currentQuestionIndex + 1} of {props.questions?.length}
+            <h4 className="mt-10 text-xl text-[#FEFAE0]/70">
+              {t('question_counter', {
+                current: currentQuestionIndex + 1,
+                total: props.questions?.length,
+              })}
             </h4>
-            <div className="mt-8 text-2xl text-white">
-              {currentQuestion?.text}
+            <div className="mt-8 text-2xl text-[#FEFAE0]">
+              {currentQuestion
+                ? t(currentQuestion.questionKey) || currentQuestion.text
+                : null}
             </div>
             <div className="flex py-6 m-10 space-x-8 cursor-pointer">
               <div className="flex items-center">
@@ -55,7 +68,7 @@ export default function Quiz(props: IQuizProps) {
                   key={`yes-${currentQuestionIndex}`}
                   onClick={() => handleAnswerClick(true)}
                 />
-                <label className="text-white ml-2">Yes</label>
+                <label className="text-[#FEFAE0] ml-2">{t('yes')}</label>
               </div>
               <div className="flex items-center">
                 <input
@@ -65,7 +78,7 @@ export default function Quiz(props: IQuizProps) {
                   key={`no-${currentQuestionIndex}`}
                   onClick={() => handleAnswerClick(false)}
                 />
-                <label className="text-white ml-2">No</label>
+                <label className="text-[#FEFAE0] ml-2">{t('no')}</label>
               </div>
             </div>
           </div>
@@ -74,5 +87,13 @@ export default function Quiz(props: IQuizProps) {
 
       {showResult && <Result testId={props.testId} answers={answers} />}
     </>
+  );
+}
+
+export default function Quiz(props: IQuizProps) {
+  return (
+    <LocaleProvider>
+      <QuizContent {...props} />
+    </LocaleProvider>
   );
 }

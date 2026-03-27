@@ -11,10 +11,10 @@ const TestList: any = ({ tests }: TestListProps) => {
       <Link href="/about" className="fixed bottom-4 right-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-10 w-10 text-gray-500"
+          className="h-10 w-10 text-[#DDA15E]"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="white"
+          stroke="#FEFAE0"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"

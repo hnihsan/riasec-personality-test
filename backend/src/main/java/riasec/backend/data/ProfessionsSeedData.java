@@ -52,7 +52,6 @@ public class ProfessionsSeedData implements CommandLineRunner {
         professionsSeedData.add(new Profession("Agronomist", "IRS"));
         professionsSeedData.add(new Profession("Anesthesiologist", "IRS"));
         professionsSeedData.add(new Profession("Anthropologist", "IRE"));
-        professionsSeedData.add(new Profession("Archaeologist", "IRE"));
         professionsSeedData.add(new Profession("Biochemist", "IRS"));
         professionsSeedData.add(new Profession("Biologist", "IRE"));
         professionsSeedData.add(new Profession("Chemical Engineer", "IRE"));
@@ -94,8 +93,6 @@ public class ProfessionsSeedData implements CommandLineRunner {
         professionsSeedData.add(new Profession("Interior Designer", "AES"));
         professionsSeedData.add(new Profession("Intelligence Research Specialist", "AEI"));
         professionsSeedData.add(new Profession("Journalist/Reporter", "ASE"));
-        professionsSeedData.add(new Profession("Landscape Architect", "AIR"));
-        professionsSeedData.add(new Profession("Librarian", "SAI"));
         professionsSeedData.add(new Profession("Medical Illustrator", "AIE"));
         professionsSeedData.add(new Profession("Museum Curator", "AES"));
         professionsSeedData.add(new Profession("Music Teacher", "ASI"));
@@ -115,13 +112,11 @@ public class ProfessionsSeedData implements CommandLineRunner {
         professionsSeedData.add(new Profession("Hospital Administrator", "SER"));
         professionsSeedData.add(new Profession("Psychologist", "SEI"));
         professionsSeedData.add(new Profession("Insurance Claims Examiner", "SIE"));
-        professionsSeedData.add(new Profession("Librarian", "SAI"));
         professionsSeedData.add(new Profession("Medical Assistant", "SCR"));
         professionsSeedData.add(new Profession("Minister/Priest/Rabbi", "SAI"));
         professionsSeedData.add(new Profession("Paralegal", "SCE"));
         professionsSeedData.add(new Profession("Park Naturalist", "SEI"));
         professionsSeedData.add(new Profession("Physical Therapist", "SIE"));
-        professionsSeedData.add(new Profession("Police Officer", "SER"));
         professionsSeedData.add(new Profession("Probation and Parole Officer", "SEC"));
         professionsSeedData.add(new Profession("Real Estate Appraiser", "SCE"));
         professionsSeedData.add(new Profession("Recreation Director", "SER"));
@@ -172,7 +167,6 @@ public class ProfessionsSeedData implements CommandLineRunner {
         professionsSeedData.add(new Profession("Business Programmer", "CRI"));
         professionsSeedData.add(new Profession("Business Teacher", "CSE"));
         professionsSeedData.add(new Profession("Catalog Librarian", "CSE"));
-        professionsSeedData.add(new Profession("Abstractor", "CSI"));
         professionsSeedData.add(new Profession("Claims Adjuster", "SEC"));
         professionsSeedData.add(new Profession("Computer Operator", "CSR"));
         professionsSeedData.add(new Profession("Congressional-District Aide", "CES"));
@@ -183,20 +177,19 @@ public class ProfessionsSeedData implements CommandLineRunner {
         professionsSeedData.add(new Profession("Editorial Assistant", "CSI"));
         professionsSeedData.add(new Profession("Elementary School Teacher", "SEC"));
         professionsSeedData.add(new Profession("Financial Analyst", "CSI"));
-        professionsSeedData.add(new Profession("Insurance Manager", "ESC"));
         professionsSeedData.add(new Profession("Insurance Underwriter", "CSE"));
         professionsSeedData.add(new Profession("Internal Auditor", "ICR"));
         professionsSeedData.add(new Profession("Kindergarten Teacher", "ESC"));
         professionsSeedData.add(new Profession("Medical Records Technician", "CSE"));
         professionsSeedData.add(new Profession("Museum Registrar", "CSE"));
-        professionsSeedData.add(new Profession("Paralegal", "SCE"));
         professionsSeedData.add(new Profession("Safety Inspector", "RCS"));
-        professionsSeedData.add(new Profession("Tax Accountant", "ECS"));
         professionsSeedData.add(new Profession("Tax Consultant", "CES"));
         professionsSeedData.add(new Profession("Travel Agent", "ECS"));
 
-        for (Profession prof: professionsSeedData) {
-            professionRepository.save(prof);
+        for (Profession prof : professionsSeedData) {
+            if (professionRepository.findByTitleAndHollandCode(prof.getTitle(), prof.getHollandCode()).isEmpty()) {
+                professionRepository.save(prof);
+            }
         }
     }
 }
