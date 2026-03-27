@@ -26,6 +26,7 @@ declare global {
     text: string;
     personalityType: string;
     id: number;
+    questionKey: string;
   }
 
   interface IQuestionAnswers {
@@ -39,6 +40,23 @@ declare global {
 
   interface IData {
     hollandCode: string;
+    exactProfessions: IProfession[];
+    similarProfessions: IProfession[];
+  }
+
+  interface ITestTaker {
+    id: number;
+    firstName: string;
+    lastName: string;
+    emailAddress: string;
+    gender: string;
+  }
+
+  interface ITestAttemptSummary {
+    id: number;
+    date: string;
+    hollandCode: string;
+    testTitle: string;
     exactProfessions: IProfession[];
     similarProfessions: IProfession[];
   }

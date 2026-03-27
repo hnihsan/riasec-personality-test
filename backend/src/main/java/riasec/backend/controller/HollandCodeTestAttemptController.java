@@ -1,8 +1,5 @@
 package riasec.backend.controller;
 
-import org.kie.api.KieServices;
-import org.kie.api.runtime.KieContainer;
-import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +9,10 @@ import riasec.backend.model.enums.Gender;
 import riasec.backend.model.enums.PersonalityType;
 import riasec.backend.repository.*;
 import java.util.*;
+import java.util.stream.Collectors;
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.POST})
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.POST, RequestMethod.GET})
 public class HollandCodeTestAttemptController {
-
-    private final KieContainer kieContainer;
-
-    public HollandCodeTestAttemptController() {
-        KieServices kieServices = KieServices.Factory.get();
-        kieContainer = kieServices.getKieClasspathContainer();
-    }
 
     @Autowired
     HollandCodeTestQuestionRepository hollandCodeTestQuestionRepository;
@@ -92,26 +83,12 @@ public class HollandCodeTestAttemptController {
                 testAttempt.setTest(hollandCodeTestObject);
             }
 
-            //Create new Drools session
-            KieSession kieSession = createDroolsSession();
-
-            // Inserting Facts into Working Memory
-            kieSession.insert(testAttempt);
-            Iterable<Profession> allProfessions = professionRepository.findAll();
-            for (Profession profession : allProfessions) {
-                kieSession.insert(profession);
+            // Step 1 — Score: replaces score.drl
+            for (Map.Entry<HollandCodeTestQuestion, Boolean> entry : testAttempt.getQuestionAnswers().entrySet()) {
+                if (Boolean.TRUE.equals(entry.getValue())) {
+                    testAttempt.incrementScore(entry.getKey().getPersonalityType());
+                }
             }
-
-            //Setting Globals
-            List<Profession> exactMatches = new ArrayList<>();
-            List<Profession> similarMatches = new ArrayList<>();
-            kieSession.setGlobal("version", 2);
-            kieSession.setGlobal("exactMatches", exactMatches);
-            kieSession.setGlobal("similarMatches", similarMatches);
-
-            //Firing Rules
-            kieSession.fireAllRules();
-            hollandCodeTestAttemptRepository.save(testAttempt);
 
             System.out.println("Realistic Score: " + testAttempt.getScore(PersonalityType.REALISTIC));
             System.out.println("Artistic Score: " + testAttempt.getScore(PersonalityType.ARTISTIC));
@@ -120,14 +97,36 @@ public class HollandCodeTestAttemptController {
             System.out.println("Social Score: " + testAttempt.getScore(PersonalityType.SOCIAL));
             System.out.println("Enterprising Score: " + testAttempt.getScore(PersonalityType.ENTERPRISING));
 
-            //Disposing Session
-            kieSession.dispose();
+            // Step 2 — Top-3 Holland code: replaces top-3-personalities-v2.drl
+            List<PersonalityType> priorityOrder = Arrays.asList(
+                PersonalityType.REALISTIC,
+                PersonalityType.ENTERPRISING,
+                PersonalityType.SOCIAL,
+                PersonalityType.INVESTIGATIVE,
+                PersonalityType.CONVENTIONAL,
+                PersonalityType.ARTISTIC
+            );
+            List<PersonalityType> sorted = new ArrayList<>(Arrays.asList(PersonalityType.values()));
+            sorted.sort((a, b) -> {
+                int cmp = testAttempt.getScore(b) - testAttempt.getScore(a);
+                if (cmp != 0) return cmp;
+                return Integer.compare(priorityOrder.indexOf(a), priorityOrder.indexOf(b));
+            });
+            String hollandCode = sorted.stream().limit(3)
+                .map(t -> String.valueOf(t.name().charAt(0)))
+                .collect(Collectors.joining());
+            testAttempt.setResult(Collections.singletonList(hollandCode));
+
+            // Step 3 — Profession matching: replaces matchProfessions.drl
+            Map<String, List<Profession>> professionResult = matchProfessions(hollandCode);
+
+            hollandCodeTestAttemptRepository.save(testAttempt);
 
             //Sending Response to Frontend
             Map<String, List<?>> response = new HashMap<>();
             response.put("hollandCode", testAttempt.getResult());
-            response.put("exactProfessions", exactMatches);
-            response.put("similarProfessions", similarMatches);
+            response.put("exactProfessions", professionResult.get("exactProfessions"));
+            response.put("similarProfessions", professionResult.get("similarProfessions"));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -136,7 +135,54 @@ public class HollandCodeTestAttemptController {
         }
     }
 
-    private KieSession createDroolsSession() {
-        return kieContainer.newKieSession("rulesKSession");
+    @GetMapping("/testAttempt/history")
+    public ResponseEntity<List<Map<String, Object>>> getHistory(@RequestParam String email) {
+        try {
+            List<HollandCodeTestAttempt> attempts = hollandCodeTestAttemptRepository.findByTestTakerEmailAddress(email);
+            List<Map<String, Object>> result = new ArrayList<>();
+
+            for (HollandCodeTestAttempt attempt : attempts) {
+                String hollandCode = attempt.getResult() != null && !attempt.getResult().isEmpty()
+                    ? attempt.getResult().get(0) : "";
+                Map<String, List<Profession>> professionResult = matchProfessions(hollandCode);
+
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("id", attempt.getId());
+                entry.put("date", attempt.getDate());
+                entry.put("hollandCode", hollandCode);
+                entry.put("testTitle", attempt.getTest() != null
+                    ? attempt.getTest().getTitle() : "");
+                entry.put("exactProfessions", professionResult.get("exactProfessions"));
+                entry.put("similarProfessions", professionResult.get("similarProfessions"));
+                result.add(entry);
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    private Map<String, List<Profession>> matchProfessions(String hollandCode) {
+        List<Profession> exactMatches = new ArrayList<>();
+        List<Profession> similarMatches = new ArrayList<>();
+        for (Profession profession : professionRepository.findAll()) {
+            String profCode = profession.getHollandCode();
+            if (hollandCode.equals(profCode)) {
+                exactMatches.add(profession);
+            } else {
+                long shared = hollandCode.chars()
+                    .filter(c -> profCode.indexOf(c) >= 0)
+                    .count();
+                if (shared >= 3) {
+                    similarMatches.add(profession);
+                }
+            }
+        }
+        Map<String, List<Profession>> result = new HashMap<>();
+        result.put("exactProfessions", exactMatches);
+        result.put("similarProfessions", similarMatches);
+        return result;
     }
 }

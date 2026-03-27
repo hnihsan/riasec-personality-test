@@ -53,19 +53,19 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
 
   return (
     <>
-      <h1 className="text-center font-bold text-[#f8f8f8] text-5xl mt-6 mb-20">
+      <h1 className="text-center font-bold text-[#FEFAE0] text-5xl mt-6 mb-20">
         Please fill in your personal details
       </h1>
 
-      <div className="bg-[#ffffff2e] max-w-xl mx-auto mt-35 p-16 rounded-lg">
+      <div className="bg-[#606C3840] max-w-xl mx-auto mt-35 p-16 rounded-lg">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-              <label className="block uppercase tracking-wide text-[#f8f8f8] text-xs font-bold mb-2">
+              <label className="block uppercase tracking-wide text-[#FEFAE0] text-xs font-bold mb-2">
                 First Name
               </label>
               <input
-                className="appearance-none block w-full bg-[#fefefed4] text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-[#FEFAE0d4] text-[#283618] border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#FEFAE0]"
                 id="firstName"
                 type="text"
                 value={formData.firstName}
@@ -74,11 +74,11 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
               />
             </div>
             <div className="w-full md:w-1/2 px-3">
-              <label className="block uppercase tracking-wide text-[#f8f8f8] text-xs font-bold mb-2">
+              <label className="block uppercase tracking-wide text-[#FEFAE0] text-xs font-bold mb-2">
                 Last Name
               </label>
               <input
-                className="appearance-none block w-full bg-[#fefefed4] text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                className="appearance-none block w-full bg-[#FEFAE0d4] text-[#283618] border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#FEFAE0]"
                 id="lastName"
                 type="text"
                 value={formData.lastName}
@@ -89,13 +89,13 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
           </div>
           <div className="flex flex-wrap -mx-3 mb-6">
             <div className="w-full px-3">
-              <label className="block uppercase tracking-wide text-[#f8f8f8] text-xs font-bold mb-2">
+              <label className="block uppercase tracking-wide text-[#FEFAE0] text-xs font-bold mb-2">
                 Email
               </label>
               <input
-                className={`appearance-none block w-full bg-[#fefefed4] text-gray-700 border ${
+                className={`appearance-none block w-full bg-[#FEFAE0d4] text-[#283618] border ${
                   isEmailValid ? '' : 'border-red-500'
-                } rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white ${
+                } rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#FEFAE0] ${
                   isEmailValid ? '' : 'focus:border-red-500'
                 }`}
                 id="email"
@@ -113,12 +113,12 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
           </div>
           <div className="flex flex-wrap -mx-3 mb-2">
             <div className="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-              <label className="block uppercase tracking-wide text-[#f8f8f8] text-xs font-bold mb-2">
+              <label className="block uppercase tracking-wide text-[#FEFAE0] text-xs font-bold mb-2">
                 Gender
               </label>
               <div className="relative">
                 <select
-                  className="block appearance-none w-full bg-[#fefefed4] border text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white "
+                  className="block appearance-none w-full bg-[#FEFAE0d4] border text-[#283618] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#FEFAE0] "
                   id="gender"
                   value={formData.gender}
                   onChange={handleChange}
@@ -128,7 +128,7 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
                   <option>Non-Binary</option>
                   <option>Other</option>
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#283618]">
                   <svg
                     className="fill-current h-4 w-4"
                     xmlns="http://www.w3.org/2000/svg"
@@ -142,7 +142,7 @@ const PersonalDataForm = ({ id }: PersonalDataFormProps) => {
           </div>
           <button
             type="submit"
-            className={`bg-[#ff00588a] hover:bg-[#ff0058e3] text-white font-bold mt-8 py-2 px-4 rounded ${
+            className={`bg-[#BC6C2588] hover:bg-[#BC6C25e3] text-[#FEFAE0] font-bold mt-8 py-2 px-4 rounded ${
               isFormValid ? '' : 'opacity-50 cursor-not-allowed'
             } ${isEmailValid ? '' : 'opacity-50 cursor-not-allowed'}`}
             disabled={!isFormValid || !isEmailValid}

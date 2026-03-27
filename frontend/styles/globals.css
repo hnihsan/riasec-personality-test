@@ -16,8 +16,7 @@ body {
 }
 
 html {
-  background: linear-gradient(to bottom, hsl(30, 85%, 85%), hsl(330, 87%, 78%));
-  background-repeat: no-repeat;
+  background: #283618;
 }
 
 input[type='radio']:after {
@@ -26,11 +25,11 @@ input[type='radio']:after {
   border-radius: 24px;
   cursor: pointer;
   position: relative;
-  background-color: #efefef;
+  background-color: #fefae0;
   content: '';
   display: inline-block;
   visibility: visible;
-  border: 2px solid white;
+  border: 2px solid #fefae0;
 }
 
 input[type='radio']:checked:after {
@@ -39,9 +38,9 @@ input[type='radio']:checked:after {
   border-radius: 24px;
   cursor: pointer;
   position: relative;
-  background-color: #ee6cc1;
+  background-color: #dda15e;
   content: '';
   display: inline-block;
   visibility: visible;
-  border: 2px solid white;
+  border: 2px solid #dda15e;
 }

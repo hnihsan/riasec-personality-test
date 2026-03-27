@@ -10,6 +10,7 @@ public class HollandCodeTestQuestion implements TestQuestion {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long Id;
     private String text;
+    private String questionKey;
     @Enumerated(EnumType.STRING)
     private PersonalityType personalityType;
 
@@ -20,7 +21,11 @@ public class HollandCodeTestQuestion implements TestQuestion {
         this.personalityType = personalityType;
     }
 
-
+    public HollandCodeTestQuestion(String text, PersonalityType personalityType, String questionKey) {
+        this.text = text;
+        this.personalityType = personalityType;
+        this.questionKey = questionKey;
+    }
 
     @Override
     public Long getId() {
@@ -29,6 +34,9 @@ public class HollandCodeTestQuestion implements TestQuestion {
     @Override
     public String getText() {
         return text;
+    }
+    public String getQuestionKey() {
+        return questionKey;
     }
     public PersonalityType getPersonalityType() {
         return personalityType;
